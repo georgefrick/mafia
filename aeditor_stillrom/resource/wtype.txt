@@ -1,0 +1,10 @@
+exotic
+sword
+dagger
+staff
+mace
+axe
+flail
+whip
+polearm
+crossbow
