@@ -383,7 +383,6 @@ public class RomJsonWriter extends RomIO {
     }
 
     JsonArrayBuilder createResets() {
-        JsonObjectBuilder resets = Json.createObjectBuilder();
         JsonArrayBuilder builder = Json.createArrayBuilder();
         Room room;
 
@@ -425,6 +424,7 @@ public class RomJsonWriter extends RomIO {
                 if (!room.getObjects().isEmpty()) {
                     roomResets.add("objects", writeRoomObjects(room.getObjects(), room.getVnum()));
                 }
+                builder.add(roomResets);
             }
         }
         return builder;
