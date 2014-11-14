@@ -16,6 +16,14 @@ public class MudShopView {
     private int openHour;
     private int closeHour;
 
+    public int[] getBuyType() {
+        return buyType;
+    }
+
+    public void setBuyType(int[] buyType) {
+        this.buyType = buyType;
+    }
+
     public MudShopView(int mobVnum) {
         buyType = new int[MudConstants.MAX_TRADE];
         keeper = mobVnum;
@@ -87,10 +95,10 @@ public class MudShopView {
 
     public String toString() {
         String temp;
-        temp = go(keeper) + " " + go(buyType[0]) + " " + go(buyType[1]) + " " + go(buyType[2]);
-        temp = temp + " " + go(buyType[3]) + " " + go(buyType[4]);
-        temp = temp + " " + go(profitBuy) + " " + go(profitSell);
-        temp = temp + " " + go(openHour) + " " + go(closeHour) + "\n";
+        temp = intToString(keeper) + " " + intToString(buyType[0]) + " " + intToString(buyType[1]) + " " + intToString(buyType[2]);
+        temp = temp + " " + intToString(buyType[3]) + " " + intToString(buyType[4]);
+        temp = temp + " " + intToString(profitBuy) + " " + intToString(profitSell);
+        temp = temp + " " + intToString(openHour) + " " + intToString(closeHour) + "\n";
         return temp;
     }
 
@@ -102,7 +110,7 @@ public class MudShopView {
         keeper = newKeeper;
     }
 
-    private String go(int a) {
+    private String intToString(int a) {
         return Integer.toString(a);
     }
 

@@ -50,6 +50,8 @@
             <lib>
                 <fileset file="lib/miglayout-3.6.2-swing.jar"/>
                 <fileset file="lib/simpleftp.jar"/>
+                <fileset file="lib/javax.json-api-1.0.jar"/>
+                <fileset file="lib/javax.json-1.0.4.jar"/>
             </lib>
             <fileset dir="${data}"/>
             <fileset dir="${image}"/>

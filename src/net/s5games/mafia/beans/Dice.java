@@ -97,6 +97,7 @@ public class Dice {
      *
      * @return numberDsides+bonus
      */
+    @Override
     public String toString() {
         String temp;
         temp = Integer.toString(numberOfDice) + "d" + Integer.toString(numberOfSides);

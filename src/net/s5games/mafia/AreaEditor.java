@@ -13,7 +13,6 @@ import net.s5games.mafia.model.impl.AreaImpl;
 import net.s5games.mafia.ui.*;
 import net.s5games.mafia.ui.view.scriptView.ScriptView;
 import net.s5games.mafia.ui.view.EditorView;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -22,7 +21,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -278,7 +276,8 @@ public class AreaEditor extends JFrame {
             JMenuItem m = (JMenuItem) a.getSource();
             if (m == fileOpen) {
                 fileChooser = new JFileChooser();
-                fileChooser.addChoosableFileFilter(new MudFileFilter());
+                fileChooser.setAcceptAllFileFilterUsed(false);
+                fileChooser.addChoosableFileFilter(new RomFileFilter());
                 fileChooser.setFileView(new MudFileView());
                 int selected = fileChooser.showOpenDialog(parent.getContentPane());
 
@@ -299,7 +298,9 @@ public class AreaEditor extends JFrame {
             JMenuItem m = (JMenuItem) a.getSource();
             if (m == fileSaveAs && openFile) {
                 fileChooser = new JFileChooser();
-                fileChooser.addChoosableFileFilter(new MudFileFilter());
+                fileChooser.setAcceptAllFileFilterUsed(false);
+                fileChooser.addChoosableFileFilter(new RomFileFilter());
+                fileChooser.addChoosableFileFilter(new JsonFileFilter());
                 fileChooser.setFileView(new MudFileView());
                 try {
                     File ft = new File(new File(theArea.getFileName()).getCanonicalPath());
@@ -310,8 +311,13 @@ public class AreaEditor extends JFrame {
                 int selected = fileChooser.showSaveDialog(parent.getContentPane());
 
                 if (selected == JFileChooser.APPROVE_OPTION) {
-                    RomWriter writer = new RomWriter(fileChooser.getSelectedFile());
-                    writer.writeArea(theArea);
+                    if( fileChooser.getFileFilter().getDescription().equals(JsonFileFilter.DESCRIPTION)) {
+                        RomJsonWriter writer = new RomJsonWriter(fileChooser.getSelectedFile());
+                        writer.writeArea(theArea);
+                    } else if( fileChooser.getFileFilter().getDescription().equals(RomFileFilter.DESCRIPTION)) {
+                        RomWriter writer = new RomWriter(fileChooser.getSelectedFile());
+                        writer.writeArea(theArea);
+                    }
                     theArea.setPathName(fileChooser.getSelectedFile().getPath());
                     fileSave.setEnabled(true);                  
                     addRecentFile(fileChooser.getSelectedFile().getAbsolutePath());
