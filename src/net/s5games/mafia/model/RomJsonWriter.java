@@ -354,6 +354,7 @@ public class RomJsonWriter extends RomIO {
             exitBuilder.add("key", exit.getKey());
             exitBuilder.add("destination", Integer.toString(exit.getToVnum()));
             exitBuilder.add("flags", exit.getFlagToken());
+            exitArrayBuilder.add(exitBuilder);
         }
         builder.add("exits", exitArrayBuilder);
 
