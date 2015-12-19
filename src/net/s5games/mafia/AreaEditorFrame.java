@@ -56,15 +56,12 @@ public class AreaEditorFrame extends JFrame {
     JMenuItem fileSaveAs;  // File->save as 
     JMenu recentFileMenu;  // File->Recent:
     final static int MAX_RECENT_FILES = 10;
+    public final static String PREFS_FILE = "prefs.txt";
     JMenu aboutMenu;
     JFileChooser fileChooser;
 
-    /* FILE MENU END */
-    AreaEditorFrame parent;
-
     /* preferences and data */
     Map<String,JMenuItem> recentFiles;
-    boolean openFile;
 
     public AreaEditorFrame(String title) {
         super(title);
@@ -79,9 +76,7 @@ public class AreaEditorFrame extends JFrame {
         bullet3 = new ImageIcon(b3);
         megadance = new ImageIcon(mega);
         recentFiles = new HashMap<String,JMenuItem>();
-        openFile = false;
-
-        parent = this;
+        
         theArea = new AreaImpl();
         myOverView = new net.s5games.mafia.ui.view.overView.OverView(theArea);
         myRoomView = new net.s5games.mafia.ui.view.roomView.RoomView(theArea);
@@ -103,8 +98,7 @@ public class AreaEditorFrame extends JFrame {
         tabbed.addTab("Mobs", null, myMobView, "Mob Editor.");
         tabbed.addTab("Objects", null, myObjectView, "Object Editor.");
         tabbed.addTab("Scripts", null, myScriptView, "Script Editor.");
-        toggleTabs(false);
-        
+      
         tabbed.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 update();
@@ -128,9 +122,7 @@ public class AreaEditorFrame extends JFrame {
          ************************************************************/
         addWindowListener(new WindowEventHandler());
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        fileClose.setEnabled(false);
-        fileSave.setEnabled(false);
-        fileSaveAs.setEnabled(false);      
+        toggleTabs(false);
         JFrame.setDefaultLookAndFeelDecorated(true);
         pack();
         validate();
@@ -153,8 +145,12 @@ public class AreaEditorFrame extends JFrame {
     }
 
     private void toggleTabs(boolean enabled) {
-        for (int loop = 0; loop < TAB_COUNT; loop++)
+        for (int loop = 0; loop < TAB_COUNT; loop++) {
             tabbed.setEnabledAt(loop, enabled);
+        }
+        fileClose.setEnabled(enabled);
+        fileSave.setEnabled(enabled);
+        fileSaveAs.setEnabled(enabled);          
     }
 
     private void leaveEditor() {
@@ -167,7 +163,7 @@ public class AreaEditorFrame extends JFrame {
         try {
             int count;
             String temp;
-            RomLoader myLoader = new RomLoader("prefs.txt");
+            RomLoader myLoader = new RomLoader(PREFS_FILE);
             if (!myLoader.isOpen()) {
                 System.out.println("No preferences file, creating as needed.");
                 return;
@@ -217,7 +213,7 @@ public class AreaEditorFrame extends JFrame {
     }
 
     private void writePreferences() {
-        RomWriter writer = new RomWriter("prefs.txt");
+        RomWriter writer = new RomWriter("PREFS_FILE");
 
         if (!writer.isOpen())
             return;
@@ -266,12 +262,19 @@ public class AreaEditorFrame extends JFrame {
 
     // File->open
     class openListener implements ActionListener {
+          JFrame myparent;
+
+        public openListener(JFrame p) {
+            super();
+            myparent = p;
+        }
+
         public void actionPerformed(ActionEvent a) {
             fileChooser = new JFileChooser();
             fileChooser.setAcceptAllFileFilterUsed(false);
             fileChooser.addChoosableFileFilter(new RomFileFilter());
             fileChooser.setFileView(new MudFileView());
-            int selected = fileChooser.showOpenDialog(parent.getContentPane());
+            int selected = fileChooser.showOpenDialog(myparent.getContentPane());
 
             if (selected == JFileChooser.APPROVE_OPTION) {
                 openFile(fileChooser.getSelectedFile());
@@ -285,6 +288,13 @@ public class AreaEditorFrame extends JFrame {
 
     //  File->save as
     class saveAsListener implements ActionListener {
+          JFrame myparent;
+
+        public saveAsListener(JFrame p) {
+            super();
+            myparent = p;
+        }
+
         public void actionPerformed(ActionEvent a) {
             fileChooser = new JFileChooser();
             fileChooser.setAcceptAllFileFilterUsed(false);
@@ -297,7 +307,7 @@ public class AreaEditorFrame extends JFrame {
             } catch (Exception fError) {
             }
 
-            int selected = fileChooser.showSaveDialog(parent.getContentPane());
+            int selected = fileChooser.showSaveDialog(myparent.getContentPane());
 
             if (selected == JFileChooser.APPROVE_OPTION) {
                 if( fileChooser.getFileFilter().getDescription().equals(JsonFileFilter.DESCRIPTION)) {
@@ -338,11 +348,7 @@ public class AreaEditorFrame extends JFrame {
         theArea.transformResets();
         update();
         toggleTabs(true);
-        openFile = true;
-        addRecentFile(toOpen.getAbsolutePath());
-        fileSave.setEnabled(true);
-        fileSaveAs.setEnabled(true);        
-        fileClose.setEnabled(true);
+        addRecentFile(toOpen.getAbsolutePath());    
     }
 
     /*
@@ -373,12 +379,7 @@ public class AreaEditorFrame extends JFrame {
     private void closeArea() {
         theArea.clear();
         update();
-        for (int a = 0; a < TAB_COUNT; a++) {
-            tabbed.setEnabledAt(a, false);
-        }
-        fileClose.setEnabled(false);
-        fileSave.setEnabled(false);
-        fileSaveAs.setEnabled(false);      
+        toggleTabs(false);
     }
 
     /*
@@ -401,12 +402,8 @@ public class AreaEditorFrame extends JFrame {
                 theArea.setBuilder(header.getBuilder());
                 theArea.setSecurity(header.getSecurity());
                 theArea.setVnumRange(header.getLowVnum(), header.getHighVnum());
-                toggleTabs(true);
-                openFile = true;
-                update();
-                fileClose.setEnabled(true);
-                fileSave.setEnabled(false);
-                fileSaveAs.setEnabled(true);       
+                toggleTabs(true);            
+                update();                    
             }            
         }
     }
@@ -424,7 +421,7 @@ public class AreaEditorFrame extends JFrame {
         // Close, Save, Save As       
         fileClose = new MafiaMenuItem("Close", 'C', bullet2, new closeListener());    
         fileSave = new MafiaMenuItem("Save", 'S', bullet2, new saveListener());
-        fileSaveAs = new MafiaMenuItem("Save As...", 'X', bullet2, new saveAsListener());
+        fileSaveAs = new MafiaMenuItem("Save As...", 'X', bullet2, new saveAsListener(this));
            
         // recent files.
         recentFileMenu = new JMenu("Open Recent", true);
@@ -432,7 +429,7 @@ public class AreaEditorFrame extends JFrame {
 
         // Add them all to the File menu
         fileMenu.add(new MafiaMenuItem("New", 'N', bullet2, new newListener())); // File-> New, Open, Convert, Quit
-        fileMenu.add(new MafiaMenuItem("Open", 'O', bullet2, new openListener()));
+        fileMenu.add(new MafiaMenuItem("Open", 'O', bullet2, new openListener(this)));
         fileMenu.add(fileClose);
         fileMenu.add(fileSave);
         fileMenu.add(fileSaveAs);      
