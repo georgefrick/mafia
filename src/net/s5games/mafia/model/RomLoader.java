@@ -388,40 +388,40 @@ public class RomLoader extends RomIO {
                     case MudConstants.ITEM_MONEY:
                     case MudConstants.ITEM_LIGHT:
                     case MudConstants.ITEM_ARMOR: {
-                        temp.setiValue(0, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(0, MudConstants.parseInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
-                        temp.setiValue(1, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(1, MudConstants.parseInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
-                        temp.setiValue(2, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(2, MudConstants.parseInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
-                        temp.setiValue(3, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(3, MudConstants.parseInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
-                        temp.setiValue(4, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(4, MudConstants.parseInt(oneArgument(hold1)));
                         break;
                     }
                     case MudConstants.ITEM_PORTAL: {
-                        temp.setiValue(0, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(0, MudConstants.parseInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
                         temp.setiValue(1, MudConstants.getBitInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
                         temp.setiValue(2, MudConstants.getBitInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
-                        temp.setiValue(3, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(3, MudConstants.parseInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
-                        temp.setiValue(4, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(4, MudConstants.parseInt(oneArgument(hold1)));
                         break;
                     }
                     case MudConstants.ITEM_FOOD:
                     case MudConstants.ITEM_FURNITURE: {
-                        temp.setiValue(0, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(0, MudConstants.parseInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
-                        temp.setiValue(1, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(1, MudConstants.parseInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
                         temp.setiValue(2, MudConstants.getBitInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
-                        temp.setiValue(3, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(3, MudConstants.parseInt(oneArgument(hold1)));
                         hold1 = trimArgument(hold1);
-                        temp.setiValue(4, Integer.parseInt(oneArgument(hold1)));
+                        temp.setiValue(4, MudConstants.parseInt(oneArgument(hold1)));
                         break;
                     }
                     default: {
@@ -460,8 +460,7 @@ public class RomLoader extends RomIO {
                 while (readVnum(buf2) == -1) {
                     buf2.reset();
                     hold1 = buf2.readLine();
-
-
+                
                     switch (hold1.charAt(0)) {
                         case 'A': {
                             hold1 = buf2.readLine();
@@ -490,10 +489,15 @@ public class RomLoader extends RomIO {
                             break;
                         }
                         case 'E':  // extra desc
-                        {
+                        {                
                             String dKeyword = readToTilde(buf2);
-                            String dDesc = readToTilde(buf2);
+                            String dDesc = readToTilde(buf2);                        
                             temp.getExtraDescriptions().put(dKeyword, dDesc);
+                            break;
+                        }
+                        case 'F': // affects on player?
+                        {
+                            System.out.println("Unsupported object affect: " + hold1);
                             break;
                         }
                         default: {
@@ -512,7 +516,7 @@ public class RomLoader extends RomIO {
             }
         }
         catch (Exception e) {
-            System.out.println("...Failed.");
+            System.out.println("...Failed." + e.getMessage());
             return;
         }
         System.out.println("...Complete.");
@@ -535,7 +539,7 @@ public class RomLoader extends RomIO {
                 hold1 = hold1.substring(hold1.indexOf(' ') + 1); // flags, sector
                 hold2 = hold1.substring(0, hold1.indexOf(' '));  // flags
                 hold1 = hold1.substring(hold1.indexOf(' ') + 1);   // sector
-                temp.setFlags(Integer.parseInt(hold2));
+                temp.setFlags(MudConstants.parseInt(hold2));
                 temp.setSector(Integer.parseInt(hold1));
 
                 hold1 = buf2.readLine(); // read first flag
@@ -745,56 +749,45 @@ public class RomLoader extends RomIO {
     }
 
     public void readHeader() {
-        System.out.print("Reading Header.");
+        System.out.println("Reading Header.");
         try {
-            String temp;
+            String line, command, argument;
             int indexa;
 
+            line = buf2.readLine();
+            while( line.toLowerCase().trim().equals("end") == false ) {
+                indexa = line.indexOf(' ');
+                command = line.substring(0, indexa);
+                command = command.toLowerCase();
+                argument = line.substring(indexa+1, line.length() );
+                argument = argument.trim();
+                if( command.toLowerCase().startsWith("credit")) {
+                    // Do nothing.
+                } else if( command.toLowerCase().startsWith("file")) {
+                    // do nothing.
+                } else if( command.toLowerCase().startsWith("builder")) {
+                    area.setBuilder(argument.trim());
+                } else if( command.toLowerCase().startsWith("vnum")) {
+                    indexa = argument.indexOf(' ');
+                    int low, high;
+                    low = Integer.parseInt(argument.substring(0, indexa));
+                    high = Integer.parseInt(argument.substring(indexa + 1, argument.length()));
+                    area.setVnumRange(low, high);
+                    lowVnum = low;
+                    highVnum = high;
+                } else if( command.toLowerCase().startsWith("security")) {
+                    area.setSecurity(Integer.parseInt(argument));
+                } else if( command.toLowerCase().startsWith("name")) {
+                    area.setAreaName(argument.trim());
+                } else if( command.toLowerCase().startsWith("flag")) {
+                       area.setFlags(Integer.parseInt(argument.trim()));
+                }
+                line = buf2.readLine();
+            }
             // File name
             area.setFileName(inputFile.getName());
             area.setPathName(inputFile.getPath());
-
-            // Name.
-            temp = buf2.readLine();
-            indexa = temp.indexOf(' ');
-            temp = temp.substring(indexa + 1);
-            temp = temp.substring(0, temp.length() - 1);
-            area.setAreaName(temp);
-
-            // Builder
-            temp = buf2.readLine();
-            indexa = temp.indexOf(' ');
-            temp = temp.substring(indexa + 1, temp.length() - 1);
-            area.setBuilder(temp);
-
-            // vnums
-            temp = buf2.readLine();
-            indexa = temp.indexOf(' ');
-            temp = temp.substring(indexa + 1, temp.length());
-            indexa = temp.indexOf(' ');
-            int low, high;
-            low = Integer.parseInt(temp.substring(0, indexa));
-            high = Integer.parseInt(temp.substring(indexa + 1, temp.length()));
-            area.setVnumRange(low, high);
-            lowVnum = low;
-            highVnum = high;
-            // credits
-            buf2.readLine();
-            // Security
-            temp = buf2.readLine();
-            indexa = temp.indexOf(' ');
-            temp = temp.substring(indexa + 1, temp.length());
-            area.setSecurity(Integer.parseInt(temp));
-
-            // flags - may or may not be there.
-            temp = buf2.readLine();
-            if (temp.startsWith("Flags")) {
-                indexa = temp.indexOf(' ');
-                temp = temp.substring(indexa + 1, temp.length());
-                area.setFlags(Integer.parseInt(temp));
-                // read end thing
-                buf2.readLine();
-            }
+            
         }
         catch (Exception e) {
             System.out.println("...Error.");

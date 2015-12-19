@@ -293,6 +293,19 @@ public class MudConstants {
         return builder.toString();
     }
 
+public static int parseInt(String value) {
+    int ret = 0;
+    try{
+        ret = Integer.parseInt(value);
+    } catch( Exception e ) {
+        try {
+            ret = getBitInt(value); // it was stored as a bit for some reason?
+        } catch ( Exception e2) {
+            System.out.println("Tried to parse " + value + " as int and bitInt, but failed.");
+        }
+    }
+    return ret;
+}
     /*
     * Takes in a bit string and returns integer bitset
     */

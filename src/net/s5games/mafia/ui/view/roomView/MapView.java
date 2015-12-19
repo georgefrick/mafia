@@ -69,8 +69,8 @@ public class MapView extends JPanel {
         data = a;
         myParent = p;
         visited = new ArrayList<Room>();
-        winWidth = 1000;
-        winHeight = 1000;
+        winWidth = 1200;
+        winHeight = 1200;
         setPreferredSize(new Dimension(winWidth, winHeight));
         zoom = ZOOM_2X;
 

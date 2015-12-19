@@ -33,7 +33,7 @@
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="${src}" destdir="${build}" classpathref="project.class.path" source="1.5"/>
+        <javac srcdir="${src}" destdir="${build}" classpathref="project.class.path" source="1.7"/>
         <copydir src="${data}" dest="${build}"/>
         <copydir src="${image}" dest="${build}"/>
     </target>
