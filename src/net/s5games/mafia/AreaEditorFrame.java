@@ -51,16 +51,12 @@ public class AreaEditorFrame extends JFrame {
     /* FILE MENU */
     JMenuBar topBar;
     JMenu fileMenu;        // File:
-    JMenuItem fileNew;     // File->new
-    JMenuItem fileOpen;    // File->open
     JMenuItem fileClose;   // File->close
     JMenuItem fileSave;    // File->save
     JMenuItem fileSaveAs;  // File->save as 
-    JMenuItem fileQuit;    // File->quit
     JMenu recentFileMenu;  // File->Recent:
     final static int MAX_RECENT_FILES = 10;
     JMenu aboutMenu;
-    JMenuItem aboutItem1;
     JFileChooser fileChooser;
 
     /* FILE MENU END */
@@ -271,21 +267,18 @@ public class AreaEditorFrame extends JFrame {
     // File->open
     class openListener implements ActionListener {
         public void actionPerformed(ActionEvent a) {
-            JMenuItem m = (JMenuItem) a.getSource();
-            if (m == fileOpen) {
-                fileChooser = new JFileChooser();
-                fileChooser.setAcceptAllFileFilterUsed(false);
-                fileChooser.addChoosableFileFilter(new RomFileFilter());
-                fileChooser.setFileView(new MudFileView());
-                int selected = fileChooser.showOpenDialog(parent.getContentPane());
+            fileChooser = new JFileChooser();
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.addChoosableFileFilter(new RomFileFilter());
+            fileChooser.setFileView(new MudFileView());
+            int selected = fileChooser.showOpenDialog(parent.getContentPane());
 
-                if (selected == JFileChooser.APPROVE_OPTION) {
-                    openFile(fileChooser.getSelectedFile());
-                    fileSave.setEnabled(true);
-                    fileSaveAs.setEnabled(true);                  
-                } else if (selected == JFileChooser.CANCEL_OPTION) {
-                    System.out.println("Canceled Load");
-                }
+            if (selected == JFileChooser.APPROVE_OPTION) {
+                openFile(fileChooser.getSelectedFile());
+                fileSave.setEnabled(true);
+                fileSaveAs.setEnabled(true);                  
+            } else if (selected == JFileChooser.CANCEL_OPTION) {
+                System.out.println("Canceled Load");
             }
         }
     }
@@ -293,35 +286,32 @@ public class AreaEditorFrame extends JFrame {
     //  File->save as
     class saveAsListener implements ActionListener {
         public void actionPerformed(ActionEvent a) {
-            JMenuItem m = (JMenuItem) a.getSource();
-            if (m == fileSaveAs && openFile) {
-                fileChooser = new JFileChooser();
-                fileChooser.setAcceptAllFileFilterUsed(false);
-                fileChooser.addChoosableFileFilter(new RomFileFilter());
-                fileChooser.addChoosableFileFilter(new JsonFileFilter());
-                fileChooser.setFileView(new MudFileView());
-                try {
-                    File ft = new File(new File(theArea.getFileName()).getCanonicalPath());
-                    fileChooser.setSelectedFile(ft);
-                } catch (Exception fError) {
-                }
+            fileChooser = new JFileChooser();
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.addChoosableFileFilter(new RomFileFilter());
+            fileChooser.addChoosableFileFilter(new JsonFileFilter());
+            fileChooser.setFileView(new MudFileView());
+            try {
+                File ft = new File(new File(theArea.getFileName()).getCanonicalPath());
+                fileChooser.setSelectedFile(ft);
+            } catch (Exception fError) {
+            }
 
-                int selected = fileChooser.showSaveDialog(parent.getContentPane());
+            int selected = fileChooser.showSaveDialog(parent.getContentPane());
 
-                if (selected == JFileChooser.APPROVE_OPTION) {
-                    if( fileChooser.getFileFilter().getDescription().equals(JsonFileFilter.DESCRIPTION)) {
-                        RomJsonWriter writer = new RomJsonWriter(fileChooser.getSelectedFile());
-                        writer.writeArea(theArea);
-                    } else if( fileChooser.getFileFilter().getDescription().equals(RomFileFilter.DESCRIPTION)) {
-                        RomWriter writer = new RomWriter(fileChooser.getSelectedFile());
-                        writer.writeArea(theArea);
-                    }
-                    theArea.setPathName(fileChooser.getSelectedFile().getPath());
-                    fileSave.setEnabled(true);                  
-                    addRecentFile(fileChooser.getSelectedFile().getAbsolutePath());
-                } else if (selected == JFileChooser.CANCEL_OPTION) {
-                    System.out.println("Canceled Save");
+            if (selected == JFileChooser.APPROVE_OPTION) {
+                if( fileChooser.getFileFilter().getDescription().equals(JsonFileFilter.DESCRIPTION)) {
+                    RomJsonWriter writer = new RomJsonWriter(fileChooser.getSelectedFile());
+                    writer.writeArea(theArea);
+                } else if( fileChooser.getFileFilter().getDescription().equals(RomFileFilter.DESCRIPTION)) {
+                    RomWriter writer = new RomWriter(fileChooser.getSelectedFile());
+                    writer.writeArea(theArea);
                 }
+                theArea.setPathName(fileChooser.getSelectedFile().getPath());
+                fileSave.setEnabled(true);                  
+                addRecentFile(fileChooser.getSelectedFile().getAbsolutePath());
+            } else if (selected == JFileChooser.CANCEL_OPTION) {
+                System.out.println("Canceled Save");
             }
         }
     }
@@ -431,48 +421,22 @@ public class AreaEditorFrame extends JFrame {
         fileMenu.setIcon(bullet1);
         fileMenu.setMnemonic('F');
 
-        // File-> New, Open, Convert, Quit
-        // New
-        fileNew = new JMenuItem("New");
-        fileNew.setMnemonic('N');
-        fileNew.setIcon(bullet2);
-        fileNew.addActionListener(new newListener());
-        // Open
-        fileOpen = new JMenuItem("Open");
-        fileOpen.setMnemonic('O');
-        fileOpen.setIcon(bullet2);
-        fileOpen.addActionListener(new openListener());
-        // Close
-        fileClose = new JMenuItem("Close");
-        fileClose.setMnemonic('C');
-        fileClose.setIcon(bullet2);
-        fileClose.addActionListener(new closeListener());
-        // Quit
-        fileQuit = new JMenuItem("Quit");
-        fileQuit.setMnemonic('Q');
-        fileQuit.setIcon(bullet2);
-        fileQuit.addActionListener(new quitListener());
-        // Save
-        fileSave = new JMenuItem("Save");
-        fileSave.setMnemonic('S');
-        fileSave.setIcon(bullet2);
-        fileSave.addActionListener(new saveListener());
-        // Save as
-        fileSaveAs = new JMenuItem("Save As...");
-        fileSaveAs.setMnemonic('X');
-        fileSaveAs.setIcon(bullet2);
-        fileSaveAs.addActionListener(new saveAsListener());       
+        // Close, Save, Save As       
+        fileClose = new MafiaMenuItem("Close", 'C', bullet2, new closeListener());    
+        fileSave = new MafiaMenuItem("Save", 'S', bullet2, new saveListener());
+        fileSaveAs = new MafiaMenuItem("Save As...", 'X', bullet2, new saveAsListener());
+           
         // recent files.
         recentFileMenu = new JMenu("Open Recent", true);
         recentFileMenu.setIcon(bullet2);
 
         // Add them all to the File menu
-        fileMenu.add(fileNew);
-        fileMenu.add(fileOpen);
+        fileMenu.add(new MafiaMenuItem("New", 'N', bullet2, new newListener())); // File-> New, Open, Convert, Quit
+        fileMenu.add(new MafiaMenuItem("Open", 'O', bullet2, new openListener()));
         fileMenu.add(fileClose);
         fileMenu.add(fileSave);
         fileMenu.add(fileSaveAs);      
-        fileMenu.add(fileQuit);
+        fileMenu.add(new MafiaMenuItem("Quit", 'Q', bullet2, new quitListener()));
         fileMenu.addSeparator();
         fileMenu.add(recentFileMenu);
         // readPreferences();
@@ -481,15 +445,7 @@ public class AreaEditorFrame extends JFrame {
         aboutMenu = new JMenu("About");
         aboutMenu.setIcon(bullet3);
         aboutMenu.setMnemonic('A');
-
-        // About-> about
-        // About
-        aboutItem1 = new JMenuItem("About");
-        aboutItem1.setIcon(bullet2);
-        aboutItem1.addActionListener(new aboutListener(this));
-
-        // Add them all to the About Menu
-        aboutMenu.add(aboutItem1);
+        aboutMenu.add(new MafiaMenuItem("About", 'B', bullet2, new aboutListener(this)));
 
         // Add everything to layout
         topBar.add(fileMenu);
