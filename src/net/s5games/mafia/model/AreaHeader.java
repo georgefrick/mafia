@@ -21,6 +21,10 @@ public class AreaHeader {
     private int flags;
 
     public AreaHeader() {
+        this.reset();
+    }
+
+    public void reset() {
         lowVnum = 0;
         highVnum = 0;
         fileName = "newarea.are";

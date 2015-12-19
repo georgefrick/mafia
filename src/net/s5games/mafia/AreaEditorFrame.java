@@ -9,7 +9,6 @@
 package net.s5games.mafia;
 
 import net.s5games.mafia.model.*;
-import net.s5games.mafia.model.impl.AreaImpl;
 import net.s5games.mafia.ui.*;
 import net.s5games.mafia.ui.view.scriptView.ScriptView;
 import net.s5games.mafia.ui.view.EditorView;
@@ -77,7 +76,7 @@ public class AreaEditorFrame extends JFrame {
         megadance = new ImageIcon(mega);
         recentFiles = new HashMap<String,JMenuItem>();
         
-        theArea = new AreaImpl();
+        theArea = new Area();
         myOverView = new net.s5games.mafia.ui.view.overView.OverView(theArea);
         myRoomView = new net.s5games.mafia.ui.view.roomView.RoomView(theArea);
         myObjectView = new net.s5games.mafia.ui.view.objectView.ObjectView(theArea);
@@ -213,7 +212,7 @@ public class AreaEditorFrame extends JFrame {
     }
 
     private void writePreferences() {
-        RomWriter writer = new RomWriter("PREFS_FILE");
+        RomWriter writer = new RomWriter(PREFS_FILE);
 
         if (!writer.isOpen())
             return;
@@ -226,14 +225,12 @@ public class AreaEditorFrame extends JFrame {
         writer.finish();
     }
 
-    // File->exit
     class quitListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             leaveEditor();
         }
     }
 
-    //  About->about
     class aboutListener implements ActionListener {
         JFrame myparent;
 
@@ -253,14 +250,12 @@ public class AreaEditorFrame extends JFrame {
         }
     }
 
-    // File->quit, or [X] button
     class WindowEventHandler extends WindowAdapter {
         public void windowClosing(WindowEvent evt) {
             leaveEditor();
         }
     }
 
-    // File->open
     class openListener implements ActionListener {
           JFrame myparent;
 
@@ -286,7 +281,6 @@ public class AreaEditorFrame extends JFrame {
         }
     }
 
-    //  File->save as
     class saveAsListener implements ActionListener {
           JFrame myparent;
 
@@ -326,9 +320,6 @@ public class AreaEditorFrame extends JFrame {
         }
     }
 
-    /*
-    * File->save
-    */
     class saveListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String fileName1 = theArea.getPathName();
@@ -351,9 +342,6 @@ public class AreaEditorFrame extends JFrame {
         addRecentFile(toOpen.getAbsolutePath());    
     }
 
-    /*
-    * File->Recent files -> "some file"
-    */
     class recentFilesListener implements ActionListener {
         private String fullFileName;
         public recentFilesListener(String toAdd) {
@@ -366,9 +354,6 @@ public class AreaEditorFrame extends JFrame {
         }
     }
 
-    /*
-    * File->Close
-    */
     class closeListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             closeArea();
@@ -382,9 +367,6 @@ public class AreaEditorFrame extends JFrame {
         toggleTabs(false);
     }
 
-    /*
-    * File->New
-    */
     class newListener implements ActionListener {    
         NewAreaPanel newAreaPanel;
 
@@ -397,11 +379,7 @@ public class AreaEditorFrame extends JFrame {
             AreaHeader header = newAreaPanel.getNewArea();
             if( header != null ) {
                 closeArea();
-                theArea.setFileName(header.getFileName());
-                theArea.setAreaName(header.getAreaName());
-                theArea.setBuilder(header.getBuilder());
-                theArea.setSecurity(header.getSecurity());
-                theArea.setVnumRange(header.getLowVnum(), header.getHighVnum());
+                theArea.setHeader(header);
                 toggleTabs(true);            
                 update();                    
             }            

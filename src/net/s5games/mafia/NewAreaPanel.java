@@ -24,6 +24,7 @@ public class NewAreaPanel extends JPanel {
     private GridBagConstraints constraint;
     private GridBagLayout layout;
     private AreaHeader header;
+    private String[] labelStrings = {"File Name", "Area Name", "Builder", "Security", "Lower Vnum", "High Vnum"};
 
     public NewAreaPanel() {
         super();
@@ -60,13 +61,8 @@ public class NewAreaPanel extends JPanel {
         add(l3);
         constraint.gridwidth = 1;
         constraint.gridheight = 1;
-        labels[0] = new JLabel("File Name : ", JLabel.RIGHT);
-        labels[1] = new JLabel("Area Name :", JLabel.RIGHT);
-        labels[2] = new JLabel("Builder   :", JLabel.RIGHT);
-        labels[3] = new JLabel("Security  :", JLabel.RIGHT);
-        labels[4] = new JLabel("Lower Vnum:", JLabel.RIGHT);
-        labels[5] = new JLabel("High Vnum :", JLabel.RIGHT);
         for (int a = 0; a < 6; a++) {
+            labels[a] = new JLabel(labelStrings[a] + ": ", JLabel.RIGHT);
             constraint.gridx = 0;
             constraint.gridy = a + 3;
             layout.setConstraints(labels[a], constraint);
@@ -146,22 +142,22 @@ public class NewAreaPanel extends JPanel {
             }
         } catch (Exception exc) {
             switch (errornum) {
-            case 1: {
-                error = "Security must be a NUMBER from 1 to 9.";
-                break;
-            }
-            case 2: {
-                error = "Low vnum must be a NUMBER!!";
-                break;
-            }
-            case 3: {
-                error = "High vnum must be a NUMBER!!";
-                break;
-            }
-            default: {
-                error = "There was an unknown error validating the Vnums and Security.";
-                break;
-            }
+                case 1: {
+                    error = "Security must be a NUMBER from 1 to 9.";
+                    break;
+                }
+                case 2: {
+                    error = "Low vnum must be a NUMBER!!";
+                    break;
+                }
+                case 3: {
+                    error = "High vnum must be a NUMBER!!";
+                    break;
+                }
+                default: {
+                    error = "There was an unknown error validating the Vnums and Security.";
+                    break;
+                }
             }
         }
         if( error != null ) {
