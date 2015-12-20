@@ -28,63 +28,61 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import net.s5games.mafia.ui.view.roomView.LabeledField;
+import net.miginfocom.swing.MigLayout;
+import net.miginfocom.layout.CC;
 
 public class OverView extends EditorView implements ActionListener {
     private JTextField fields[];
+    private JPanel fieldPanels[];
     private FlagChoice areaFlagChoice;
     protected JButton edit, revnum;
+    private String[] fieldTitles = {
+        "File Name", "Area Name", "Builder", "Security", "Low Vnum", "High Vnum", "Resets in Area",
+        "Exits Out of Area", "Rooms in Area", "Mobs in Area", "Objects in Area", "Object:Mobile:Room Ratio"
+    };
 
     public OverView(Area ar) {
         super(ar);
+        this.setLayout(new MigLayout("fillx"));
 
-        fields = new JTextField[13];
+        JPanel overviewPanel = new JPanel();
+        overviewPanel.setLayout(new MigLayout());
+   
         edit = new JButton("Change Values");
         revnum = new JButton("ReVnum Area");
-        areaFlagChoice = new FlagChoice("Area Flags", MudConstants.areaFlagNames,
-                MudConstants.areaFlagData, MudConstants.areaFlagCount, this);
+   
+        overviewPanel.add(edit);
+        overviewPanel.add(revnum, "wrap");
+
+        fields = new JTextField[12];
+        fieldPanels = new JPanel[12];
 
         for (int a = 0; a < 12; a++) {
             fields[a] = new JTextField(20);
             fields[a].setEditable(false);
+            fieldPanels[a] = new LabeledField(fieldTitles[a], fields[a], true);
+            if( a % 2 == 1 ) {
+                overviewPanel.add( fieldPanels[a] , "wrap");
+            } else {
+                overviewPanel.add( fieldPanels[a] );
+            }
         }
 
-        // Set everything up for display
-        fields[0].setBorder(new TitledBorder("File Name"));
-        fields[1].setBorder(new TitledBorder("Area Name"));
-        fields[2].setBorder(new TitledBorder("Builder"));
-        fields[3].setBorder(new TitledBorder("Security"));
-        fields[4].setBorder(new TitledBorder("Low Vnum"));
-        fields[5].setBorder(new TitledBorder("High Vnum"));
-        fields[6].setBorder(new TitledBorder("Resets in Area"));
-        fields[7].setBorder(new TitledBorder("Exits Out of Area"));
-        fields[8].setBorder(new TitledBorder("Rooms in Area"));
-        fields[9].setBorder(new TitledBorder("Mobs in Area"));
-        fields[10].setBorder(new TitledBorder("Objects In Area"));
-        fields[11].setBorder(new TitledBorder("Object:Mobile:Room Ratio"));
-    
+        areaFlagChoice = new FlagChoice("Area Flags", MudConstants.areaFlagNames,
+                MudConstants.areaFlagData, MudConstants.areaFlagCount, this);
+        overviewPanel.add(areaFlagChoice, "span");
+
         edit.setEnabled(false);
         revnum.setEnabled(false);
         areaFlagChoice.setEnabled(false);
 
-        // lay everything out
-        this.setLayout(layout);
-        constraint.insets = new Insets(3, 3, 3, 3);
-        insertAt(0, 1, 1, 1, edit);
-        insertAt(1, 1, 1, 1, revnum);
-
-        for (int a = 0; a < 6; a++)
-            insertAt(0, a + 2, 1, 1, fields[a]);
-
-        for (int a = 0; a < 6; a++)
-            insertAt(1, a + 2, 1, 1, fields[a + 6]);
-
-        constraint.fill = GridBagConstraints.BOTH;
-        insertAt(0, 8, 2, 1, areaFlagChoice);
-
-        // add listeners
         edit.addActionListener(new dataUpdate());
         revnum.addActionListener(new revnumUpdate());
 
+CC componentConstraints = new CC();
+componentConstraints.alignX("center").spanX();
+        add(overviewPanel, componentConstraints);
         update();
     }
 

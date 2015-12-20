@@ -6,13 +6,6 @@ import javax.swing.*;
 import java.util.Vector;
 import net.s5games.mafia.ui.view.mobView.MudShopView;
 
-/**
- * Created by IntelliJ IDEA.
- * User: tenchi
- * Date: Jul 5, 2008
- * Time: 4:08:12 PM
- * To change this template use File | Settings | File Templates.
- */
 public class Area {
 
 private boolean validArea;

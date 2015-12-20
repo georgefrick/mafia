@@ -1,10 +1,11 @@
-// George Frick
-// AreaEditor.java
-// Area Editor Project, spring 2002
-//
-// This is the main class of the Area editor, it's purpose being to set
-// up the main gui and start the components up. The program is event
-// based.
+/* George Frick
+ * AreaEditor.java
+ * Area Editor Project, spring 2002
+ *
+ * This is the main class of the Area editor, it's purpose being to set
+ * up the main gui and start the components up. The program is event
+ * based.
+ */
 
 package net.s5games.mafia;
 
@@ -26,10 +27,6 @@ import java.util.*;
 public class AreaEditorFrame extends JFrame {
 
 	private static final long serialVersionUID = 5924318944902029357L;
-	/* resources */
-    ClassLoader loader;
-    URL b1, b2, b3, mega;
-    ImageIcon bullet1, bullet2, bullet3, megadance;
 
     /* Layout */
     GridBagLayout myLayout;
@@ -48,7 +45,6 @@ public class AreaEditorFrame extends JFrame {
     Area theArea;
 
     /* FILE MENU */
-    JMenuBar topBar;
     JMenu fileMenu;        // File:
     JMenuItem fileClose;   // File->close
     JMenuItem fileSave;    // File->save
@@ -64,17 +60,16 @@ public class AreaEditorFrame extends JFrame {
 
     public AreaEditorFrame(String title) {
         super(title);
+        JPanel mainEditorPanel = new JPanel();
+        mainEditorPanel.setPreferredSize(new Dimension(1280,1024));
 
-        loader = ClassLoader.getSystemClassLoader();
-        b1 = loader.getResource("bullet.gif");
-        b2 = loader.getResource("bullet2.gif");
-        b3 = loader.getResource("bullet3.gif");
-        mega = loader.getResource("megadance.gif");
-        bullet1 = new ImageIcon(b1);
-        bullet2 = new ImageIcon(b2);
-        bullet3 = new ImageIcon(b3);
-        megadance = new ImageIcon(mega);
         recentFiles = new HashMap<String,JMenuItem>();
+
+        ClassLoader loader = ClassLoader.getSystemClassLoader();
+        ImageIcon jMenuItemBullet = new ImageIcon(loader.getResource("bullet2.gif"));
+        ImageIcon jMenuBullet = new ImageIcon(loader.getResource("bullet.gif"));
+        ImageIcon jMenuAboutBullet = new ImageIcon(loader.getResource("bullet3.gif"));
+        setJMenuBar(createFileMenu(jMenuBullet, jMenuItemBullet, jMenuAboutBullet));
         
         theArea = new Area();
         myOverView = new net.s5games.mafia.ui.view.overView.OverView(theArea);
@@ -84,13 +79,11 @@ public class AreaEditorFrame extends JFrame {
         myScriptView = new ScriptView(theArea);
         myLayout = new GridBagLayout();
         constraint = new GridBagConstraints();
-        Container mp = this.getContentPane();
-        mp.setLayout(myLayout);
+        mainEditorPanel.setLayout(myLayout);
 
         /************************************************************
          *	Create Contents				                          *
          ************************************************************/
-        addFileMenu();
         tabbed = new JTabbedPane(JTabbedPane.TOP);
         tabbed.addTab("OverView", null, myOverView, "Overview of model stats.");
         tabbed.addTab("Rooms", null, myRoomView, "Room Editor.");
@@ -107,14 +100,13 @@ public class AreaEditorFrame extends JFrame {
         /************************************************************
          *	Add everything to window		                      *
          ************************************************************/
-        setJMenuBar(topBar);
         constraint.gridy = 1;
         constraint.gridx = 0;
         constraint.fill = GridBagConstraints.BOTH;
         constraint.weighty = 1;
         constraint.weightx = 1;
         myLayout.setConstraints(tabbed, constraint);
-        mp.add(tabbed);
+        mainEditorPanel.add(tabbed);
 
         /************************************************************
          *	Create/Setup the window			                      *
@@ -122,15 +114,14 @@ public class AreaEditorFrame extends JFrame {
         addWindowListener(new WindowEventHandler());
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         toggleTabs(false);
+
+        getContentPane().add( mainEditorPanel );
         JFrame.setDefaultLookAndFeelDecorated(true);
         pack();
         validate();
         setVisible(true);
 
-        // set icon
-        Image fIcon = Toolkit.getDefaultToolkit().getImage(b1);
-        this.setIconImage(fIcon);
-
+        setIconImage(jMenuBullet.getImage());
         requestFocus();
         readPreferences();
     }
@@ -233,19 +224,23 @@ public class AreaEditorFrame extends JFrame {
 
     class aboutListener implements ActionListener {
         JFrame myparent;
+        ImageIcon megadance;
+        JPanel aboutPanel;
 
         public aboutListener(JFrame p) {
             super();
             myparent = p;
+            ClassLoader loader = ClassLoader.getSystemClassLoader();
+            megadance = new ImageIcon(loader.getResource("megadance.gif"));
+            aboutPanel = new JPanel();
+            JLabel msg = new JLabel("<HTML><BODY><BOLD><HR>Thank you for using the MAFIA model editor!</BOLD><BR> This editor was designed and created by <A HREF=mailto:'tenchi@s5games.net'>George Frick</A><P>GUI design by George Frick and Scott Emerson of <A HREF='http://www.s5games.net'>CaffeineGamez</A></P><HR></BODY></HTML><HTML><BODY><BOLD>Special thanks to all beta testers and players of Animud.</BOLD></BODY></HTML>");
+            aboutPanel.add(msg);
+            aboutPanel.add(new JLabel(megadance));
+
         }
 
         public void actionPerformed(ActionEvent e) {
-            JPanel temp = new JPanel();
-            JLabel msg = new JLabel("<HTML><BODY><BOLD><HR>Thank you for using the MAFIA model editor!</BOLD><BR> This editor was designed and created by <A HREF=mailto:'tenchi@s5games.net'>George Frick</A><P>GUI design by George Frick and Scott Emerson of <A HREF='http://www.s5games.net'>CaffeineGamez</A></P><HR></BODY></HTML><HTML><BODY><BOLD>Special thanks to all beta testers and players of Animud.</BOLD></BODY></HTML>");
-            temp.add(msg);
-            temp.add(new JLabel(megadance));
-
-            JOptionPane.showMessageDialog(myparent, temp, "About the MAFIA editor",
+            JOptionPane.showMessageDialog(myparent, aboutPanel, "About the MAFIA editor",
                     JOptionPane.PLAIN_MESSAGE);
         }
     }
@@ -386,45 +381,46 @@ public class AreaEditorFrame extends JFrame {
         }
     }
 
-    private void addFileMenu() {
+    private JMenuBar createFileMenu(ImageIcon jMenuIcon, ImageIcon jMenuItemIcon, ImageIcon jMenuAboutIcon) {
         // Create a File menu and add it to the program.
-        topBar = new JMenuBar();
+        JMenuBar topBar = new JMenuBar();
         topBar.setBorder(new BevelBorder(BevelBorder.RAISED));
 
         // File Menu
         fileMenu = new JMenu("File", true);
-        fileMenu.setIcon(bullet1);
+        fileMenu.setIcon(jMenuIcon);
         fileMenu.setMnemonic('F');
 
         // Close, Save, Save As       
-        fileClose = new MafiaMenuItem("Close", 'C', bullet2, new closeListener());    
-        fileSave = new MafiaMenuItem("Save", 'S', bullet2, new saveListener());
-        fileSaveAs = new MafiaMenuItem("Save As...", 'X', bullet2, new saveAsListener(this));
+        fileClose = new MafiaMenuItem("Close", 'C', jMenuItemIcon, new closeListener());    
+        fileSave = new MafiaMenuItem("Save", 'S', jMenuItemIcon, new saveListener());
+        fileSaveAs = new MafiaMenuItem("Save As...", 'X', jMenuItemIcon, new saveAsListener(this));
            
         // recent files.
         recentFileMenu = new JMenu("Open Recent", true);
-        recentFileMenu.setIcon(bullet2);
+        recentFileMenu.setIcon(jMenuItemIcon);
 
         // Add them all to the File menu
-        fileMenu.add(new MafiaMenuItem("New", 'N', bullet2, new newListener())); // File-> New, Open, Convert, Quit
-        fileMenu.add(new MafiaMenuItem("Open", 'O', bullet2, new openListener(this)));
+        fileMenu.add(new MafiaMenuItem("New", 'N', jMenuItemIcon, new newListener())); // File-> New, Open, Convert, Quit
+        fileMenu.add(new MafiaMenuItem("Open", 'O', jMenuItemIcon, new openListener(this)));
         fileMenu.add(fileClose);
         fileMenu.add(fileSave);
         fileMenu.add(fileSaveAs);      
-        fileMenu.add(new MafiaMenuItem("Quit", 'Q', bullet2, new quitListener()));
+        fileMenu.add(new MafiaMenuItem("Quit", 'Q', jMenuItemIcon, new quitListener()));
         fileMenu.addSeparator();
         fileMenu.add(recentFileMenu);
         // readPreferences();
 
         // About Menu
         aboutMenu = new JMenu("About");
-        aboutMenu.setIcon(bullet3);
+        aboutMenu.setIcon(jMenuAboutIcon);
         aboutMenu.setMnemonic('A');
-        aboutMenu.add(new MafiaMenuItem("About", 'B', bullet2, new aboutListener(this)));
+        aboutMenu.add(new MafiaMenuItem("About", 'B', jMenuItemIcon, new aboutListener(this)));
 
         // Add everything to layout
         topBar.add(fileMenu);
         topBar.add(aboutMenu);
+        return topBar;
     }
 
 }

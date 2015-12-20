@@ -761,6 +761,7 @@ public class RomLoader extends RomIO {
                 command = command.toLowerCase();
                 argument = line.substring(indexa+1, line.length() );
                 argument = argument.trim();
+                argument = argument.replaceAll("~","");
                 if( command.toLowerCase().startsWith("credit")) {
                     // Do nothing.
                 } else if( command.toLowerCase().startsWith("file")) {

@@ -35,9 +35,10 @@ public class FlagChoice extends JPanel {
      */
     private FlagChoice(String title) {
         super(true);
-        if (title != null)
-            setBorder(new TitledBorder(title));
         setLayout(new MigLayout());
+        if (title != null) {
+            add(new JLabel(title + ": "), "wrap");
+        }
     }
 
     /**
@@ -77,7 +78,7 @@ public class FlagChoice extends JPanel {
             choices[a].setSelected(false); // Just in case.
             choices[a].addActionListener(myParent);
             if( a % columns == (columns -1) ) {
-                add(choices[a],"wrap");
+                add(choices[a] ,"wrap");
             } else {
                 add(choices[a]);
             }

@@ -39,43 +39,38 @@ public class RoomView extends net.s5games.mafia.ui.view.EditorView implements Ac
     private JCheckBox keyDig;
     private JCheckBox keyLink;
     static final long serialVersionUID = 23342342341L;
+
     public RoomView(Area ar) {
         super(ar);
         ClassLoader loader = ClassLoader.getSystemClassLoader();
+        Dimension mapHolderDimension = new Dimension(500, 600);
 
         containerButton = createResetButton();
         extraDescButton = createExtraDescriptionButton();
-        sectorchoice = createSectorChooser();
+        
         flagchoice = new FlagChoice("Room Flags", MudConstants.roomFlags,
-                MudConstants.roomFlagData, MudConstants.roomFlagCount, this);
+                MudConstants.roomFlagData, MudConstants.roomFlagCount, this, 6);
 
         fields = new JTextField[4];
         constraint.insets = new Insets(3, 3, 3, 3);
 
         fields[1] = new JTextField(20);
-        JPanel namePanel = new JPanel();
-        namePanel.setLayout(new GridLayout(1, 1));
-        namePanel.add(fields[1]);
-        namePanel.setBorder(new TitledBorder("Name"));
+        JPanel namePanel = new LabeledField("Name", fields[1]);
 
         fields[2] = new JMudNumberField(4);
+        JPanel hpPanel = new LabeledField("HP Regen", fields[2]);
+
         fields[3] = new JMudNumberField(4);
-        JPanel regenPanel = new JPanel();
-        regenPanel.setLayout(new GridLayout(1,2));
-        regenPanel.add(fields[2]);
-        regenPanel.add(fields[3]);
-        regenPanel.setBorder(new TitledBorder("Hit/Mana Regen"));
+        JPanel manaPanel = new LabeledField("Mana Regen", fields[3]);
 
-        JPanel sectorPanel = new JPanel();
-        sectorPanel.setLayout(new GridLayout(1,1));
-        sectorPanel.add(sectorchoice);
-        sectorPanel.setBorder(new TitledBorder("Sector"));
+        sectorchoice = createSectorChooser();
+        JPanel sectorPanel = new LabeledField("Sector", sectorchoice);
 
-        desc = new JTextArea(6, 40);
+        desc = new JTextArea(6, 60);
         desc.setLineWrap(true);
-        desc.setColumns(38);
+        desc.setColumns(60);
         JScrollPane descHolder = new JScrollPane(desc);
-        descHolder.setBorder(new TitledBorder("Description"));
+        JPanel descPanel = new LabeledField( "Description", descHolder, true);
 
         fields[1].addFocusListener(new StringFieldFocusListener());
         fields[2].addFocusListener(new StringFieldFocusListener());
@@ -106,9 +101,8 @@ public class RoomView extends net.s5games.mafia.ui.view.EditorView implements Ac
         zPanel.add(keyDig);
         zPanel.add(keyLink);
         mapHolder.add(zPanel, "wrap");
-        mapHolder.add(mapPort, "span, growx");
-      //  mapHolder.setBorder(new TitledBorder("Map"));
-        mapHolder.setPreferredSize(new Dimension(425, 500));
+        mapHolder.add(mapPort, "span, growx, growy");
+        mapHolder.setPreferredSize(mapHolderDimension);
 
         vnumBox = data.getVnumCombo("room");
         newRoomButton = new JButton("New");
@@ -116,7 +110,8 @@ public class RoomView extends net.s5games.mafia.ui.view.EditorView implements Ac
         backRoomButton = new JButton("Back");
         nextRoomButton = new JButton("Next");
         doorsRoomButton = new JButton("Doors");
-        Box buttonPanel = Box.createHorizontalBox();
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new MigLayout());
         buttonPanel.add(vnumBox);
         buttonPanel.add(backRoomButton);
         buttonPanel.add(nextRoomButton);
@@ -198,13 +193,17 @@ public class RoomView extends net.s5games.mafia.ui.view.EditorView implements Ac
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new MigLayout());
         leftPanel.add(sectorPanel);
-        leftPanel.add(regenPanel);
+        leftPanel.add(hpPanel);
+        leftPanel.add(manaPanel);
         leftPanel.add(namePanel,"wrap");
-        leftPanel.add(descHolder,"wrap,  span");
+        leftPanel.add(descPanel,"wrap,  span");
         leftPanel.add(flagchoice, "wrap, span");
         leftPanel.add(exitpanel, "wrap, growx, span");
 
-        JSplitPane split = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, leftPanel, mapHolder);
+        JPanel split = new JPanel();
+        split.setLayout(new MigLayout());
+        split.add(leftPanel);
+        split.add(mapHolder);
 
         add(buttonPanel, "wrap");
         add(split, "grow");
