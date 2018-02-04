@@ -4,7 +4,7 @@
  * Area Editor Project, Spring 2002
  * 12/19/2015
  */
-package net.s5games.mafia.ui.view.roomView;
+package net.s5games.mafia.ui;
 
 import net.s5games.mafia.model.MudConstants;
 import net.s5games.mafia.model.*;

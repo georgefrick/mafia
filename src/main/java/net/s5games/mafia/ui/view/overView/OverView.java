@@ -10,6 +10,7 @@ package net.s5games.mafia.ui.view.overView;
 
 import net.s5games.mafia.model.MudConstants;
 import net.s5games.mafia.model.Area;
+import net.s5games.mafia.ui.LabeledField;
 import net.s5games.mafia.ui.view.EditorView;
 import net.s5games.mafia.ui.FlagChoice;
 import net.s5games.mafia.ui.JMudNumberField;
@@ -21,14 +22,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.TitledBorder;
+
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import net.s5games.mafia.ui.view.roomView.LabeledField;
+
 import net.miginfocom.swing.MigLayout;
 import net.miginfocom.layout.CC;
 

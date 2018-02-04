@@ -55,22 +55,22 @@ public class RoomView extends net.s5games.mafia.ui.view.EditorView implements Ac
         constraint.insets = new Insets(3, 3, 3, 3);
 
         fields[1] = new JTextField(20);
-        JPanel namePanel = new net.s5games.mafia.ui.view.roomView.LabeledField("Name", fields[1]);
+        JPanel namePanel = new LabeledField("Name", fields[1]);
 
         fields[2] = new JMudNumberField(4);
-        JPanel hpPanel = new net.s5games.mafia.ui.view.roomView.LabeledField("HP Regen", fields[2]);
+        JPanel hpPanel = new LabeledField("HP Regen", fields[2]);
 
         fields[3] = new JMudNumberField(4);
-        JPanel manaPanel = new net.s5games.mafia.ui.view.roomView.LabeledField("Mana Regen", fields[3]);
+        JPanel manaPanel = new LabeledField("Mana Regen", fields[3]);
 
         sectorchoice = createSectorChooser();
-        JPanel sectorPanel = new net.s5games.mafia.ui.view.roomView.LabeledField("Sector", sectorchoice);
+        JPanel sectorPanel = new LabeledField("Sector", sectorchoice);
 
         desc = new JTextArea(6, 60);
         desc.setLineWrap(true);
         desc.setColumns(60);
         JScrollPane descHolder = new JScrollPane(desc);
-        JPanel descPanel = new net.s5games.mafia.ui.view.roomView.LabeledField( "Description", descHolder, true);
+        JPanel descPanel = new LabeledField( "Description", descHolder, true);
 
         fields[1].addFocusListener(new StringFieldFocusListener());
         fields[2].addFocusListener(new StringFieldFocusListener());
