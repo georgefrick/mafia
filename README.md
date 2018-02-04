@@ -11,7 +11,7 @@ Work did begin on forming a proper layer of abstraction. You should be able to s
 
 This code is provided as is, though emails and messages about it are welcome.
 
-You can play Animud which is still running, but visiting https://animud.net or directly via telnet at animud.net:6667
+You can play Animud which is still running, by visiting https://animud.net or directly via telnet at animud.net:6667
 
 Happy Mudding/Building! :-)
 
